@@ -8,18 +8,21 @@ export interface AboutData {
 }
 
 export const ABOUT_DATA: AboutData = {
-  ownerName: "Kayleigh-Anne,",
-  role: "Founder & Lead Coordinator",
-  bio: "With a passion for detail and 16 dedicated staff, I founded this company to give families their time back. We don't just clean; we create a sanctuary for your family.",
+  ownerName: "Maid to Perfection",
+  role: "Professional Cleaning Services",
+  bio: "With over 15 years of hands-on industry experience and 5 successful years in business, we are proud to deliver reliable, high-quality cleaning services across the Surrey area. Our dedicated team is committed to providing exceptional results with attention to detail, professionalism, and care. We understand that every space is different, which is why we tailor our services to meet your specific needs.",
   stats: [
     { label: "Years Exp.", value: "15+" },
-    { label: "Local Jobs", value: "2k+" },
+    { label: "In Business", value: "5" },
+    { label: "Staff Members", value: "16" },
   ],
   points: [
-    "DBS Checked",
-    "Regular & One-Off Specialists",
+    "After-build & EOT Cleans",
+    "Commercial & Domestic",
+    "Hoarder & Organisation",
+    "Fully Trained Staff",
+    "Surrey Based & Expanding",
     "Satisfaction Guaranteed",
-    "16+ Professional Staff",
   ],
   imageUrl: "/Img/Kayleigh-Anne.jpeg",
 };

@@ -11,6 +11,9 @@ import {
   Stethoscope,
   BedDouble,
   Repeat,
+  LayoutGrid,
+  Trash2,
+  Search,
   LucideIcon,
 } from "lucide-react";
 
@@ -29,7 +32,7 @@ export interface FormField {
 export interface FormStep {
   id: string;
   question: string;
-  type: "choice" | "multiple-choice" | "text" | "phone"; // Add "multiple-choice" here
+  type: "choice" | "multiple-choice" | "text" | "phone";
   options?: FormOption[];
   fields?: FormField[];
 }
@@ -51,7 +54,12 @@ export const FORM_CONFIG: FormConfig = {
         { label: "Commercial", value: "Commercial", icon: Building2 },
         { label: "Deep Clean", value: "deep clean", icon: Sparkles },
         { label: "End of Tenancy", value: "end of tenancy", icon: DoorOpen },
-        { label: "Builders Clean", value: "builder", icon: Hammer },
+        { label: "After Builders", value: "after_builder", icon: Hammer },
+        {
+          label: "Hoarder & Org",
+          value: "hoarder_organisation",
+          icon: LayoutGrid,
+        },
       ],
     },
     {
@@ -62,7 +70,7 @@ export const FORM_CONFIG: FormConfig = {
         { label: "One-off", value: "One-off", icon: CheckCircle2 },
         { label: "Weekly", value: "Weekly", icon: Repeat },
         { label: "Fortnightly", value: "Fortnightly", icon: Calendar },
-        { label: " Bi-weekly", value: " Bi-weekly", icon: Calendar },
+        { label: "Bi-weekly", value: "Bi-weekly", icon: Calendar },
       ],
     },
     {
@@ -81,8 +89,8 @@ export const FORM_CONFIG: FormConfig = {
       fields: [
         {
           id: "lastCleanDate",
-          placeholder: "Last time you had a cleaner",
-          type: "date",
+          placeholder: "Last time you had a cleaner (approx)",
+          type: "text",
         },
       ],
     },
@@ -105,9 +113,9 @@ export const FORM_CONFIG: FormConfig = {
       question: "How soon do you need us?",
       type: "choice",
       options: [
-        { label: "As soon as possible (ASAP)", value: "asap", icon: Clock },
-        { label: "Within the next week", value: "next_week", icon: Calendar },
-        { label: "Just looking for a quote", value: "later", icon: Calendar },
+        { label: "As soon as possible", value: "asap", icon: Clock },
+        { label: "Within the week", value: "next_week", icon: Calendar },
+        { label: "Just a quote", value: "later", icon: Search },
       ],
     },
     {
@@ -116,8 +124,8 @@ export const FORM_CONFIG: FormConfig = {
       type: "text",
       fields: [
         { id: "fullName", placeholder: "Full Name" },
-        { id: "email", placeholder: "Email" },
-        { id: "phone", placeholder: "Enter Valid Phone like 07xxx" },
+        { id: "email", placeholder: "Email Address" },
+        { id: "phone", placeholder: "Phone (e.g. 07xxx)" },
       ],
     },
     {
