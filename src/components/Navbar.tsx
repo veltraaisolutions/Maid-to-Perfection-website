@@ -72,7 +72,7 @@ export default function Navbar() {
               size={12}
               className="text-[#D4AF37]"
             />
-            0800 123 456
+            07340519197
           </a>
 
           <Link
