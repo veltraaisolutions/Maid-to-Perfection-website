@@ -43,7 +43,7 @@ export default function Navbar() {
               Maid <span className="text-[#D4AF37]">To Perfection</span>
             </span>
             <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400">
-              Premium Cleaning
+              Cleaning Services
             </span>
           </div>
         </Link>
@@ -65,7 +65,7 @@ export default function Navbar() {
         {/* Action Buttons & Mobile Toggle */}
         <div className="flex items-center gap-3">
           <a
-            href="tel:0800123456"
+            href="tel:07340519197"
             className="hidden lg:flex items-center gap-2 text-[10px] font-black tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 text-white hover:border-[#D4AF37]/50 transition-all"
           >
             <Phone
@@ -113,7 +113,7 @@ export default function Navbar() {
               className="flex items-center justify-center gap-2 py-4 rounded-xl bg-white/5 border border-white/10 font-bold text-[#D4AF37]"
             >
               <Phone size={16} />
-              0800 123 456
+              07340519197
             </a>
             <Link
               href="/#quote"
