@@ -24,25 +24,25 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-white/10 bg-black/95 backdrop-blur-md text-white">
       <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Logo Section - Circular & Clean */}
         <Link
           href="/"
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-4 group"
         >
-          <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gold/30 group-hover:border-gold transition-colors">
+          <div className="relative w-20 h-16 transition-transform duration-300 group-hover:scale-105">
             <Image
-              src="/Img/logo.svg"
+              src="/Img/logo/logo.jpeg"
               alt="Maid To Perfection Logo"
               fill
-              className="object-cover"
+              className="object-contain"
               priority
             />
           </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-black italic uppercase tracking-tighter leading-none">
+
+          <div className="hidden sm:flex flex-col border-l border-white/20 pl-4">
+            <span className="text-xl font-black italic uppercase tracking-tighter leading-none">
               Maid <span className="text-[#D4AF37]">To Perfection</span>
             </span>
-            <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-[#D4AF37] mt-1">
               Cleaning Services
             </span>
           </div>
@@ -82,7 +82,6 @@ export default function Navbar() {
             Get Instant Quote
           </Link>
 
-          {/* Hamburger Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
@@ -92,7 +91,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden absolute top-20 left-0 w-full bg-black border-b border-white/10 p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
           {navLinks.map((link) => (
@@ -106,14 +105,12 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-
           <div className="pt-4 flex flex-col gap-3">
             <a
-              href="tel:0800123456"
+              href="tel:07340519197"
               className="flex items-center justify-center gap-2 py-4 rounded-xl bg-white/5 border border-white/10 font-bold text-[#D4AF37]"
             >
-              <Phone size={16} />
-              07340519197
+              <Phone size={16} /> 07340519197
             </a>
             <Link
               href="/#quote"
