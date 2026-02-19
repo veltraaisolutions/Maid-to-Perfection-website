@@ -57,13 +57,14 @@
   }
   
   body {
-    @apply bg-black text-white antialiased selection:bg-brand selection:text-black;
+    @apply text-white antialiased selection:bg-brand selection:text-black;
+    background-color: transparent;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";
   }
 
   html {
     scroll-behavior: smooth;
-    background-color: black;
+    background-color: transparent;
   }
 }
 

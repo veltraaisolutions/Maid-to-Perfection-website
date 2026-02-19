@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Montserrat, Great_Vibes } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import ParallaxBackground from "@/components/ParallaxBackground";
 
-// default font for next.js
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -45,15 +45,8 @@ export default function RootLayout({
     >
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${greatVibes.variable} antialiased min-h-screen relative`}
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/Img/bg.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-          backgroundRepeat: "no-repeat",
-        }}
       >
+        <ParallaxBackground />
         <Navbar />
         {children}
       </body>
