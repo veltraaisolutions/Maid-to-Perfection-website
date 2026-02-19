@@ -24,11 +24,12 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-white/10 bg-black/95 backdrop-blur-md text-white">
       <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+        {/* Logo Section */}
         <Link
           href="/"
-          className="flex items-center gap-4 group"
+          className="flex items-center gap-3 group"
         >
-          <div className="relative w-20 h-16 transition-transform duration-300 group-hover:scale-105">
+          <div className="relative w-10 h-10 md:w-12 md:h-12">
             <Image
               src="/Img/logo/logo.jpeg"
               alt="Maid To Perfection Logo"
@@ -38,13 +39,28 @@ export default function Navbar() {
             />
           </div>
 
-          <div className="hidden sm:flex flex-col border-l border-white/20 pl-4">
-            <span className="text-xl font-black italic uppercase tracking-tighter leading-none">
-              Maid <span className="text-[#D4AF37]">To Perfection</span>
-            </span>
-            <span className="text-[9px] uppercase tracking-[0.4em] text-[#D4AF37] mt-1">
+          <div className="flex flex-col justify-center">
+            {/* Main Title */}
+            <h1
+              className="text-[10px] md:text-sm font-black tracking-[0.1em] leading-none uppercase italic"
+              style={{ fontFamily: "var(--font-montserrat)" }}
+            >
+              <span className="text-white">Maid</span>{" "}
+              <span className="text-[#D4AF37]">To Perfection</span>
+            </h1>
+
+            {/* Subtitle  */}
+            <p
+              className="text-base md:text-xl text-[#D4AF37]"
+              style={{
+                fontFamily: "var(--font-great-vibes)",
+                marginTop: "4px",
+                lineHeight: "0.8",
+                paddingLeft: "2px",
+              }}
+            >
               Cleaning Services
-            </span>
+            </p>
           </div>
         </Link>
 
@@ -54,7 +70,7 @@ export default function Navbar() {
             <Link
               key={link.label}
               href={link.href}
-              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-[#D4AF37] transition-colors"
+              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-[#D4AF37] transition-colors"
             >
               {link.icon}
               {link.label}
@@ -62,11 +78,11 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Action Buttons & Mobile Toggle */}
-        <div className="flex items-center gap-3">
+        {/* Action Buttons & Hamburger */}
+        <div className="flex items-center gap-2 md:gap-3">
           <a
             href="tel:07340519197"
-            className="hidden lg:flex items-center gap-2 text-[10px] font-black tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 text-white hover:border-[#D4AF37]/50 transition-all"
+            className="hidden lg:flex items-center gap-2 text-[10px] font-bold tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 text-white hover:border-[#D4AF37]/50 transition-all"
           >
             <Phone
               size={12}
@@ -77,40 +93,44 @@ export default function Navbar() {
 
           <Link
             href="/#quote"
-            className="hidden sm:block bg-[#D4AF37] text-black text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-full shadow-lg shadow-[#D4AF37]/20 hover:bg-[#C5A028] active:scale-95 transition-all"
+            className="hidden sm:block bg-[#D4AF37] text-black text-[10px] font-black uppercase tracking-[0.2em] px-5 py-2.5 rounded-full shadow-lg shadow-[#D4AF37]/20 hover:bg-[#C5A028] active:scale-95 transition-all"
           >
-            Get Instant Quote
+            Get Quote
           </Link>
 
+          {/* Mobile Toggle Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+            aria-label="Toggle Menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer - Responsive & Smooth */}
       {isOpen && (
-        <div className="md:hidden absolute top-20 left-0 w-full bg-black border-b border-white/10 p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="md:hidden absolute top-20 left-0 w-full bg-black/98 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 p-3 text-sm font-bold uppercase tracking-widest text-gray-300 hover:text-[#D4AF37] border-b border-white/5"
+              className="flex items-center gap-3 p-4 text-sm font-bold uppercase tracking-widest text-gray-300 hover:text-[#D4AF37] border-b border-white/5"
             >
               {link.icon || <Sparkles size={14} />}
               {link.label}
             </Link>
           ))}
+
           <div className="pt-4 flex flex-col gap-3">
             <a
               href="tel:07340519197"
               className="flex items-center justify-center gap-2 py-4 rounded-xl bg-white/5 border border-white/10 font-bold text-[#D4AF37]"
             >
-              <Phone size={16} /> 07340519197
+              <Phone size={16} />
+              07340519197
             </a>
             <Link
               href="/#quote"
