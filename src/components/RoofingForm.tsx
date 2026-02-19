@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -7,29 +5,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
-  Loader2,
   Sparkles,
   CheckCircle2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
-import { FORM_CONFIG, FormStep } from "../data/questions";
+import { FORM_CONFIG } from "../data/questions";
 
-// Updated type to support arrays for multiple-choice
 type FormAnswers = Record<string, string | number | boolean | string[]>;
 
 export default function RoofingForm() {
-  const [stepIndex, setStepIndex] = useState<number>(0);
+  const [currentStepId, setCurrentStepId] = useState<string>(
+    FORM_CONFIG.initialStepId,
+  );
+  const [history, setHistory] = useState<string[]>([]);
   const [formData, setFormData] = useState<FormAnswers>({});
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const currentStep: FormStep = FORM_CONFIG.steps[stepIndex];
-  const progress = ((stepIndex + 1) / FORM_CONFIG.steps.length) * 100;
+  const currentStep = FORM_CONFIG.allSteps[currentStepId];
+
+  const getActiveFlow = () => {
+    const service = formData["serviceType"] as string;
+    return FORM_CONFIG.flows[service] || [];
+  };
 
   const validateStep = () => {
-    // 1. Validation for Multiple Choice
     if (currentStep.type === "multiple-choice") {
       const selections = (formData[currentStep.id] as string[]) || [];
       if (selections.length === 0) {
@@ -39,64 +41,68 @@ export default function RoofingForm() {
       return true;
     }
 
-    // 2. Simple choice steps are always valid
     if (currentStep.type === "choice") return true;
 
     const fields = currentStep.fields || [];
-
     for (const field of fields) {
-      const val = formData[field.id];
-      const stringVal = String(val || "").trim();
-
-      // Basic empty field validation
-      // Requirements: Numbers (beds/baths) min 1 char, others min 2
-      const isNumberField = field.id === "bedrooms" || field.id === "bathrooms";
-      const minLength = isNumberField ? 1 : 2;
-
-      if (stringVal.length < minLength) {
-        const fieldName = field.placeholder.split("(")[0].toLowerCase();
-        setError(`Please enter your ${fieldName}`);
+      if (!String(formData[field.id] || "").trim()) {
+        setError("Please fill in all fields");
         return false;
       }
     }
-
     setError(null);
     return true;
   };
 
   const handleNext = async (value?: string) => {
     const updatedData = { ...formData };
-
     if (value && currentStep.type === "choice") {
       updatedData[currentStep.id] = value;
     }
-
     setFormData(updatedData);
 
     if (!value && !validateStep()) return;
 
-    if (stepIndex < FORM_CONFIG.steps.length - 1) {
-      setStepIndex(stepIndex + 1);
-      setError(null);
+    let nextStepId = "";
+    if (currentStepId === FORM_CONFIG.initialStepId) {
+      const selectedService = value || (updatedData.serviceType as string);
+      nextStepId = FORM_CONFIG.flows[selectedService][0];
     } else {
-      setIsCalculating(true);
-      setTimeout(() => submitToN8N(updatedData), 1800);
+      const flow = getActiveFlow();
+      const currentIndex = flow.indexOf(currentStepId);
+      if (currentIndex < flow.length - 1) {
+        nextStepId = flow[currentIndex + 1];
+      } else {
+        setIsCalculating(true);
+        setTimeout(() => submitToN8N(updatedData), 1800);
+        return;
+      }
+    }
+
+    setHistory([...history, currentStepId]);
+    setCurrentStepId(nextStepId);
+    setError(null);
+  };
+
+  const handleBack = () => {
+    const newHistory = [...history];
+    const prevStepId = newHistory.pop();
+    if (prevStepId) {
+      setHistory(newHistory);
+      setCurrentStepId(prevStepId);
     }
   };
 
   const toggleOption = (value: string) => {
-    const currentSelections = (formData[currentStep.id] as string[]) || [];
-    const newSelections = currentSelections.includes(value)
-      ? currentSelections.filter((item) => item !== value)
-      : [...currentSelections, value];
-
-    setFormData((prev) => ({
-      ...prev,
-      [currentStep.id]: newSelections,
-    }));
+    const current = (formData[currentStep.id] as string[]) || [];
+    const updated = current.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...current, value];
+    setFormData((prev) => ({ ...prev, [currentStep.id]: updated }));
   };
 
   const submitToN8N = async (finalData: FormAnswers) => {
+    console.log("🚀 Final Form Data:", finalData); // Response logged to console first
     setLoading(true);
     try {
       await fetch(FORM_CONFIG.webhookUrl, {
@@ -104,42 +110,12 @@ export default function RoofingForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...finalData,
-          source: "Cleaning Website Template",
+          source: "Cleaning Service Quote",
           timestamp: new Date().toISOString(),
-          status: "lead_generated",
         }),
       });
 
-      const duration = 3 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = {
-        startVelocity: 30,
-        spread: 360,
-        ticks: 150,
-        zIndex: 0,
-      };
-      const randomInRange = (min: number, max: number) =>
-        Math.random() * (max - min) + min;
-
-      const interval: any = setInterval(function () {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-
-        confetti({
-          ...defaults,
-          particleCount: 80,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-          colors: ["#dc2626", "#ffffff", "#1e293b"],
-        });
-
-        confetti({
-          ...defaults,
-          particleCount: 80,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          colors: ["#dc2626", "#ffffff", "#1e293b"],
-        });
-      }, 250);
-
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
       setSubmitted(true);
     } catch (err) {
       alert("Submission error. Please check your connection.");
@@ -149,64 +125,56 @@ export default function RoofingForm() {
     }
   };
 
-  if (isCalculating) {
+  const activeFlow = getActiveFlow();
+  const totalSteps = activeFlow.length + 1;
+  const currentProgressIndex =
+    currentStepId === FORM_CONFIG.initialStepId
+      ? 1
+      : activeFlow.indexOf(currentStepId) + 2;
+  const progress = (currentProgressIndex / totalSteps) * 100;
+
+  if (isCalculating)
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-6">
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 2 }}
-          className="mb-6 text-brand"
+          className="text-brand"
         >
-          <Sparkles
-            size={60}
-            strokeWidth={1.5}
-          />
+          <Sparkles size={60} />
         </motion.div>
-        <h2 className="text-2xl font-bold mb-2">Generating Estimate...</h2>
-        <p className="text-muted-foreground text-base max-w-xs">
-          Matching local rates and contractors...
-        </p>
+        <h2 className="text-2xl font-bold mt-4">Analysing Requirements...</h2>
       </div>
     );
-  }
 
-  if (submitted) {
+  if (submitted)
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center p-10 bg-card border rounded-[2.5rem] shadow-2xl max-w-md mx-auto"
-      >
-        <div className="w-20 h-20 bg-brand/10 text-brand rounded-full flex items-center justify-center mx-auto mb-6 border border-brand/20">
-          <CheckCircle2 size={40} />
-        </div>
-        <h2 className="text-3xl font-black mb-3 text-foreground uppercase italic tracking-tight">
-          Success!
-        </h2>
-        <p className="text-muted-foreground text-base mb-8 leading-relaxed">
-          Thanks,{" "}
-          <span className="text-foreground font-bold">
-            {String(formData.fullName || "User")}
-          </span>
-          ! Our team will contact you shortly.
+      <div className="text-center p-10 bg-card border rounded-[2.5rem] max-w-md mx-auto">
+        <CheckCircle2
+          size={60}
+          className="mx-auto text-brand mb-4"
+        />
+        <h2 className="text-3xl font-black uppercase italic">Success!</h2>
+        <p className="mt-4 text-muted-foreground">
+          Thanks, {String(formData.fullName || "User")}! Our team will contact
+          you shortly.
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="w-full py-4 bg-brand text-white rounded-xl font-black text-lg hover:brightness-110 shadow-lg shadow-brand/20 cursor-pointer"
+          className="w-full mt-8 py-4 bg-brand text-white rounded-xl font-bold uppercase tracking-widest"
         >
-          RETURN
+          Return
         </button>
-      </motion.div>
+      </div>
     );
-  }
 
   return (
-    <div className="max-w-xl mx-auto px-4">
-      <div className="mb-8 text-center mt-5">
-        <h1 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter italic">
-          Maid To <span className="text-brand">Perfection</span>
+    <div className="max-w-xl mx-auto px-4 py-10">
+      <div className="mb-8 text-center">
+        <h1 className="text-2xl font-black uppercase italic tracking-tighter mb-4">
+          MAID TO <span className="text-brand">PERFECTION</span>
         </h1>
-        <div className="w-full bg-muted h-2 rounded-full overflow-hidden max-w-[250px] mx-auto border border-border">
+        <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
           <motion.div
             animate={{ width: `${progress}%` }}
             className="h-full bg-brand"
@@ -216,13 +184,13 @@ export default function RoofingForm() {
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={stepIndex}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -15 }}
-          className="bg-card backdrop-blur-2xl border rounded-[2.5rem] p-8 md:p-10 shadow-2xl min-h-[450px] flex flex-col relative overflow-hidden"
+          key={currentStepId}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          className="bg-card border rounded-[2.5rem] p-8 md:p-10 shadow-2xl min-h-[480px] flex flex-col"
         >
-          <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-foreground leading-tight">
+          <h2 className="text-xl md:text-2xl font-bold text-center mb-8">
             {currentStep.question}
           </h2>
 
@@ -234,133 +202,85 @@ export default function RoofingForm() {
                   const isSelected =
                     currentStep.type === "multiple-choice"
                       ? ((formData[currentStep.id] as string[]) || []).includes(
-                          opt.value
+                          opt.value,
                         )
                       : formData[currentStep.id] === opt.value;
-
                   return (
                     <button
                       key={opt.value}
-                      onClick={() => {
-                        if (currentStep.type === "multiple-choice") {
-                          toggleOption(opt.value);
-                        } else {
-                          handleNext(opt.value);
-                        }
-                      }}
-                      className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all group active:scale-[0.96] ${
-                        isSelected
-                          ? "border-brand bg-brand/10"
-                          : "bg-muted/40 border-transparent hover:border-brand/50"
-                      }`}
+                      onClick={() =>
+                        currentStep.type === "multiple-choice"
+                          ? toggleOption(opt.value)
+                          : handleNext(opt.value)
+                      }
+                      className={`flex flex-col items-center p-6 rounded-2xl border-2 transition-all ${isSelected ? "border-brand bg-brand/10" : "bg-muted/40 border-transparent hover:border-brand/50"}`}
                     >
                       <opt.icon
-                        className={`mb-3 transition-all ${
-                          isSelected
-                            ? "text-brand"
-                            : "text-muted-foreground group-hover:text-brand"
-                        }`}
-                        size={36}
-                        strokeWidth={1.5}
+                        className={`mb-3 ${isSelected ? "text-brand" : "text-muted-foreground"}`}
+                        size={32}
                       />
-                      <span
-                        className={`font-bold text-sm text-center uppercase tracking-tight ${
-                          isSelected
-                            ? "text-foreground"
-                            : "text-foreground/70 group-hover:text-foreground"
-                        }`}
-                      >
+                      <span className="font-bold text-xs uppercase text-center">
                         {opt.label}
                       </span>
                     </button>
                   );
                 })}
-
                 {currentStep.type === "multiple-choice" && (
                   <button
                     onClick={() => handleNext()}
-                    className="col-span-2 mt-4 w-full h-14 bg-brand text-white font-black text-lg rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-brand/20 active:scale-[0.98] uppercase cursor-pointer"
+                    className="col-span-2 mt-4 h-14 bg-brand text-white font-black rounded-xl uppercase tracking-widest"
                   >
-                    Continue <ChevronRight size={22} />
+                    Continue
                   </button>
                 )}
               </div>
             )}
 
             {(currentStep.type === "text" || currentStep.type === "phone") && (
-              <div className="space-y-4 w-full max-w-sm mx-auto">
+              <div className="space-y-4 max-w-sm mx-auto w-full">
                 {currentStep.fields?.map((f) => (
-                  <div
+                  <input
                     key={f.id}
-                    className="space-y-1"
-                  >
-                    <input
-                      type={currentStep.type === "phone" ? "tel" : "text"}
-                      placeholder={f.placeholder}
-                      className="w-full h-14 px-6 bg-muted/50 border-2 border-border rounded-xl focus:border-brand focus:outline-none text-lg text-foreground transition-all"
-                      onChange={(e) => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          [f.id]: e.target.value,
-                        }));
-                        if (error) setError(null);
-                      }}
-                      value={(formData[f.id] as string) || ""}
-                      onKeyDown={(e) => e.key === "Enter" && handleNext()}
-                    />
-                  </div>
+                    type="text"
+                    placeholder={f.placeholder}
+                    className="w-full h-14 px-6 bg-muted/50 border-2 border-border rounded-xl focus:border-brand focus:outline-none"
+                    value={(formData[f.id] as string) || ""}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, [f.id]: e.target.value }))
+                    }
+                  />
                 ))}
-
                 {error && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-brand text-xs font-bold text-center uppercase tracking-wider"
-                  >
+                  <p className="text-brand text-xs font-bold text-center uppercase">
                     {error}
-                  </motion.p>
+                  </p>
                 )}
-
                 <button
-                  disabled={loading}
                   onClick={() => handleNext()}
-                  className="w-full h-14 bg-brand text-white font-black text-lg rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-brand/20 active:scale-[0.98] mt-4 uppercase cursor-pointer"
+                  className="w-full h-14 bg-brand text-white font-black rounded-xl flex items-center justify-center gap-2 uppercase tracking-widest"
                 >
-                  {loading ? (
-                    <Loader2
-                      className="animate-spin"
-                      size={20}
-                    />
-                  ) : (
-                    <>
-                      {stepIndex === FORM_CONFIG.steps.length - 1
-                        ? "Get Quote"
-                        : "Continue"}
-                      <ChevronRight size={22} />
-                    </>
-                  )}
+                  {currentProgressIndex === totalSteps
+                    ? "GET QUOTE"
+                    : "CONTINUE"}{" "}
+                  <ChevronRight size={20} />
                 </button>
               </div>
             )}
           </div>
 
-          <div className="mt-8 flex justify-between items-center border-t border-border/50 pt-6">
-            {stepIndex > 0 ? (
+          <div className="mt-8 flex justify-between items-center pt-6 border-t border-border/50">
+            {history.length > 0 ? (
               <button
-                onClick={() => setStepIndex(stepIndex - 1)}
-                className="flex items-center text-muted-foreground hover:text-brand font-bold text-xs uppercase tracking-widest cursor-pointer"
+                onClick={handleBack}
+                className="flex items-center text-muted-foreground hover:text-brand font-bold text-xs uppercase tracking-widest"
               >
-                <ChevronLeft
-                  size={16}
-                  className="mr-1"
-                />{" "}
-                Back
+                <ChevronLeft size={16} /> Back
               </button>
             ) : (
               <div />
             )}
-            <span className="text-muted-foreground font-mono text-xs font-bold bg-muted px-3 py-1 rounded-md border border-border">
-              {stepIndex + 1} / {FORM_CONFIG.steps.length}
+            <span className="text-muted-foreground font-mono text-xs font-bold bg-muted px-3 py-1 rounded-md">
+              {currentProgressIndex} / {totalSteps}
             </span>
           </div>
         </motion.div>
