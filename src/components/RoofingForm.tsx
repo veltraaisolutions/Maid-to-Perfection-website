@@ -24,6 +24,9 @@ export default function RoofingForm() {
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const shinyGoldGradient =
+    "bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] via-[#b38728] via-[#fbf5b7] to-[#aa771c] bg-clip-text text-transparent";
+
   const currentStep = FORM_CONFIG.allSteps[currentStepId];
 
   const getActiveFlow = () => {
@@ -53,7 +56,6 @@ export default function RoofingForm() {
     setError(null);
     return true;
   };
-  // test
 
   const handleNext = async (value?: string) => {
     const updatedData = { ...formData };
@@ -103,7 +105,7 @@ export default function RoofingForm() {
   };
 
   const submitToN8N = async (finalData: FormAnswers) => {
-    console.log("🚀 Final Form Data:", finalData); // Response logged to console first
+    console.log("🚀 Final Form Data:", finalData);
     setLoading(true);
     try {
       await fetch(FORM_CONFIG.webhookUrl, {
@@ -155,7 +157,11 @@ export default function RoofingForm() {
           size={60}
           className="mx-auto text-brand mb-4"
         />
-        <h2 className="text-3xl font-black uppercase italic">Success!</h2>
+        <h2
+          className={`text-3xl font-black uppercase italic ${shinyGoldGradient}`}
+        >
+          Success!
+        </h2>
         <p className="mt-4 text-muted-foreground">
           Thanks, {String(formData.fullName || "User")}! Our team will contact
           you shortly.
@@ -172,8 +178,15 @@ export default function RoofingForm() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-black uppercase italic tracking-tighter mb-4">
-          MAID TO <span className="text-brand">PERFECTION</span>
+        {/* title -  shiny gold */}
+        <h1
+          className={`text-2xl md:text-3xl font-black uppercase italic tracking-tighter mb-4 ${shinyGoldGradient}`}
+          style={{
+            lineHeight: "1.3",
+            paddingBottom: "4px",
+          }}
+        >
+          Maid To Perfection
         </h1>
         <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden">
           <motion.div
