@@ -15,6 +15,10 @@ import Image from "next/image";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Shiny gold gradient utility string
+  const shinyGoldGradient =
+    "bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] via-[#b38728] via-[#fbf5b7] to-[#aa771c] bg-clip-text text-transparent";
+
   const navLinks = [
     { href: "/", label: "Home", icon: null },
     { href: "/about", label: "About", icon: <Info size={14} /> },
@@ -36,27 +40,28 @@ export default function Navbar() {
               fill
               className="object-contain"
               priority
+              sizes="48px"
             />
           </div>
 
           <div className="flex flex-col justify-center">
             {/* Main Title */}
             <h1
-              className="text-[10px] md:text-sm font-black tracking-[0.1em] leading-none uppercase italic"
+              className={`text-[10px] md:text-sm font-black tracking-[0.1em] leading-none uppercase italic ${shinyGoldGradient}`}
               style={{ fontFamily: "var(--font-montserrat)" }}
             >
-              <span className="text-white">Maid</span>{" "}
-              <span className="text-[#D4AF37]">To Perfection</span>
+              Maid To Perfection
             </h1>
 
             {/* Subtitle  */}
             <p
-              className="text-base md:text-xl text-[#D4AF37]"
+              className={`text-base md:text-xl ${shinyGoldGradient}`}
               style={{
                 fontFamily: "var(--font-great-vibes)",
-                marginTop: "4px",
-                lineHeight: "0.8",
+                marginTop: "5px",
+                lineHeight: "1.2",
                 paddingLeft: "2px",
+                paddingBottom: "4px",
               }}
             >
               Cleaning Services
@@ -109,7 +114,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer - Responsive & Smooth */}
+      {/* Mobile Menu Drawer */}
       {isOpen && (
         <div className="md:hidden absolute top-20 left-0 w-full bg-black/98 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
           {navLinks.map((link) => (
