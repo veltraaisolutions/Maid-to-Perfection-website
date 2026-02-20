@@ -158,7 +158,7 @@ export default function RoofingForm() {
           className="mx-auto text-brand mb-4"
         />
         <h2
-          className={`text-3xl font-black uppercase italic ${shinyGoldGradient}`}
+          className={`text-3xl font-semibold uppercase italic ${shinyGoldGradient}`}
         >
           Success!
         </h2>
@@ -178,9 +178,9 @@ export default function RoofingForm() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
       <div className="mb-8 text-center">
-        {/* title -  shiny gold */}
+        {/* title */}
         <h1
-          className={`text-2xl md:text-3xl font-black uppercase italic tracking-tighter mb-4 ${shinyGoldGradient}`}
+          className={`text-2xl md:text-3xl font-semibold uppercase italic tracking-normal mb-4 ${shinyGoldGradient}`}
           style={{
             lineHeight: "1.3",
             paddingBottom: "4px",
@@ -204,7 +204,7 @@ export default function RoofingForm() {
           exit={{ opacity: 0, x: -10 }}
           className="bg-card border rounded-[2.5rem] p-8 md:p-10 shadow-2xl min-h-[480px] flex flex-col"
         >
-          <h2 className="text-xl md:text-2xl font-bold text-center mb-8">
+          <h2 className="text-xl md:text-2xl font-semibold text-center mb-8">
             {currentStep.question}
           </h2>
 
@@ -233,7 +233,7 @@ export default function RoofingForm() {
                         className={`mb-3 ${isSelected ? "text-brand" : "text-muted-foreground"}`}
                         size={32}
                       />
-                      <span className="font-bold text-xs uppercase text-center">
+                      <span className="font-semibold text-xs uppercase text-center">
                         {opt.label}
                       </span>
                     </button>
@@ -242,7 +242,7 @@ export default function RoofingForm() {
                 {currentStep.type === "multiple-choice" && (
                   <button
                     onClick={() => handleNext()}
-                    className="col-span-2 mt-4 h-14 bg-brand text-white font-black rounded-xl uppercase tracking-widest"
+                    className="col-span-2 mt-4 h-14 bg-brand text-white font-bold rounded-xl uppercase tracking-widest"
                   >
                     Continue
                   </button>
@@ -271,7 +271,7 @@ export default function RoofingForm() {
                 )}
                 <button
                   onClick={() => handleNext()}
-                  className="w-full h-14 bg-brand text-white font-black rounded-xl flex items-center justify-center gap-2 uppercase tracking-widest"
+                  className="w-full h-14 bg-brand text-white font-bold rounded-xl flex items-center justify-center gap-2 uppercase tracking-widest"
                 >
                   {currentProgressIndex === totalSteps
                     ? "GET QUOTE"
